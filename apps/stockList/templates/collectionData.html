@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>收集数据</title>
+    <script src="https://img.hcharts.cn/jquery/jquery-1.8.3.min.js"></script>
+    <script src="{% static 'layer/layer.js' %}"></script>
+</head>
+<body>
+    <button id="collectionDetail">开始收集数据</button>
+    <ul id="resultData">
+
+    </ul>
+</body>
+<script type="text/javascript">
+function collectionAjax(market, id){
+    $.ajax({
+        type: 'GET',
+        data: {'market': market, 'id': id},
+        url: '{% url 'stockList:collectionDetailData' %}',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+            layIndex = layer.msg('正在收集数据，请稍等！', {icon: 16, time: -1});
+        },
+        error: function () {//请求失败处理函数
+            layer.alert("发生未知错误，请联系管理员！");
+        },
+
+        success: function (result) { //请求成功后处理函数。
+            console.log(result);
+            layer.close(layIndex);
+{#            var res = JSON.parse(result);#}
+            var res = result;
+            var html = "<li>状态：" + res['state'] + "；市场：" + res['market'] + "；结束代码：" + res['id'] + "。</li>";
+            $("#resultData").append(html);
+            if (res['state'] == 'SUCCESS'){
+            }else{
+                collectionAjax(res['market'], res['id']);
+            }
+        }
+    });
+}
+
+$("#collectionDetail").click(function () {
+    collectionAjax("SZ", 2128);
+})
+</script>
+</html>

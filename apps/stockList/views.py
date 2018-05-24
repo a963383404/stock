@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import requests, json
+import requests, json, time
 from django.views.generic.base import View
 from django.http import HttpResponse
+from django.shortcuts import render
 
 from .models import SzAll, ShAll, ShAllDetail, SzAllDetail
+
+class CollectionData(View):
+    def get(self, request):
+        return render(request, 'collectionData.html')
 
 class CollectionSzList(View):
     API_URL = "http://web.juhe.cn:8080/finance/stock/szall"
@@ -67,28 +72,35 @@ class CollectionShList(View):
 
 class CollectionDetailData(View):
     URL = "http://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=%s&scale=60&ma=no&datalen=1023"
+    result = {'market': None,  'state': 'SUCCESS', 'id': None}
 
     def get(self, request):
-        from datetime import datetime
-        start = datetime.now()
+        market = request.GET.get("market", None)
+        id = request.GET.get("id", 0)
 
-        # 处理深证数据
-        self.handleSzData()
+        print request.GET
+        # 解决ConnectionError
+        try:
+            if market != 'SH':
+                # 处理深证数据
+                self.handleSzData(int(id))
 
-        # 处理上证数据
-        self.handleShData()
+            if market == 'SZ':
+                id = 0
 
-        end = datetime.now()
-        time = end - start
-        msg = "处理耗时：%s秒，Success!" % time
+            # 处理上证数据
+            self.handleShData(int(id))
+        except requests.exceptions.ConnectionError as e:
+            self.result['state'] = 'FAIL'
+        except Exception as e:
+            self.result = {'market': market, 'state': 'FAIL', 'id': id}
 
-        return HttpResponse(json.dumps(msg), content_type="application/json")
+        return HttpResponse(json.dumps(self.result), content_type="application/json")
 
     # 处理深证数据
-    def handleSzData(self):
-        allObj = SzAll.objects.all()
+    def handleSzData(self, id):
+        allObj = SzAll.objects.filter(id__gt=id).all()
 
-        # import pdb;pdb.set_trace()
         for szObj in allObj:
             data = self.changeDate(szObj.symbol)
             for data_item in data:
@@ -100,6 +112,9 @@ class CollectionDetailData(View):
     def saveSzData(self, data, obj):
         o = SzAllDetail.objects.filter(stock=obj, day=data['day'])
         if o:
+            o = o.get()
+            print "%s--SZ_ID:%s" % (o.day, o.stock.id)
+            self.result = {'market': 'SZ', 'state': 'SUCCESS', 'id': o.stock.id}
             return False
         else:
             SzAllDetail.objects.create(**{
@@ -114,8 +129,8 @@ class CollectionDetailData(View):
             return True
 
     # 处理上证数据
-    def handleShData(self):
-        allObj = ShAll.objects.all()
+    def handleShData(self, id):
+        allObj = ShAll.objects.filter(id__gt=id).all()
 
         for shObj in allObj:
             data = self.changeDate(shObj.symbol)
@@ -128,6 +143,9 @@ class CollectionDetailData(View):
     def saveShData(self, data, obj):
         o = ShAllDetail.objects.filter(stock__code=obj.code, day=data['day'])
         if o:
+            o = o.get()
+            print "%s--SH_ID:%s" % (o.day, o.stock.id)
+            self.result = {'market': 'SH', 'state': 'SUCCESS', 'id': o.stock.id}
             return False
         else:
             ShAllDetail.objects.create(**{
