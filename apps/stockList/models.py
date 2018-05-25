@@ -41,7 +41,7 @@ class SzAllDetail(models.Model):
         verbose_name_plural = verbose_name
 
     def __unicode__(self):
-        return self.stock
+        return self.stock.name
 
 class ShAllDetail(models.Model):
     volume = models.IntegerField(blank=False, null=False, verbose_name='成交量')
