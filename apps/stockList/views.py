@@ -205,3 +205,7 @@ class CollectionDetailData(View):
                 i = 0
 
         return newData
+
+class CustomComand(View):
+    def get(self, request):
+        return HttpResponse(json.dumps('success!'), content_type="application/json")
