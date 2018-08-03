@@ -26,7 +26,7 @@ class GoldColumnView(View):
                 if o.color == '#FFD700':
                     total = total + 1
             ShAll.objects.filter(id=s.id).update(goldTotal=total)
-            print str(s.code) + " : " + str(total)
+            print(str(s.code) + " : " + str(total))
 
     def selectSZ(self):
         a = SzAll.objects.all()
@@ -37,7 +37,7 @@ class GoldColumnView(View):
                 if o.color == '#FFD700':
                     total = total + 1
             SzAll.objects.filter(id=s.id).update(goldTotal=total)
-            print str(s.code) + " : " + str(total)
+            print(str(s.code) + " : " + str(total))
 
     # 选出含有黄金柱的个股
     @staticmethod

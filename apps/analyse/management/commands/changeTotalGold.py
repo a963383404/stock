@@ -18,7 +18,7 @@ class Command(BaseCommand):
                 raise CommandError('two argments must!')
             self.changeTotalGlod(arg)
         except Exception as e:
-            print e
+            print(e)
             raise CommandError('Error')
 
 
@@ -39,7 +39,7 @@ class Command(BaseCommand):
             ShAll.objects.filter(id=s.id).update(goldTotal=total)
             # 添加到 ShAnalyseTotal 中
             self.addShAnalyseTotal(s, total)
-            print str(s.code) + " : " + str(total)
+            print(str(s.code) + " : " + str(total))
 
     def selectSZ(self, arg):
         a = SzAll.objects.all()
@@ -52,7 +52,7 @@ class Command(BaseCommand):
             SzAll.objects.filter(id=s.id).update(goldTotal=total)
             # 添加到SzAnalyse
             self.addSzAnalyseTotal(s, total)
-            print str(s.code) + " : " + str(total)
+            print(str(s.code) + " : " + str(total))
 
     def addShAnalyseTotal(self, stock, goldTotal):
         obj = ShAnalyseTotal.objects.filter(stock=stock)

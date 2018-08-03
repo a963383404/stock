@@ -18,7 +18,7 @@ class Command(BaseCommand):
             # 遍历深证个股
             self.selectSZ(arg)
         except Exception as e:
-            print e
+            print(e)
             raise CommandError('Error')
 
 
@@ -57,7 +57,7 @@ class Command(BaseCommand):
                 i = i + 1
 
             SzAll.objects.filter(id=s.id).update(goldTotal=total)
-            print str(s) + " : " + str(total)
+            print(str(s) + " : " + str(total))
 
     # 判断是否为黄金柱
     def determineGold(self, a1, a2, a3, a4):

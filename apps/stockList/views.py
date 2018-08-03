@@ -71,7 +71,7 @@ class CollectionShList(View):
         return HttpResponse(json.dumps(msg), content_type="application/json")
 
 class CollectionDetailData(View):
-    URL = "http://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=%s&scale=60&ma=no&datalen=1023"
+    URL = "http://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=%s&scale=240&ma=no&datalen=1023"
     result = {'market': None,  'state': 'SUCCESS', 'id': None}
 
     def get(self, request):
@@ -172,40 +172,10 @@ class CollectionDetailData(View):
         res_json = json.loads(res_text)
         res_json = res_json[::-1]
 
-        i = 0
-        newData = []
-        for item in res_json:
-            volume = int(item['volume'])
-            high = float(item['high'])
-            low = float(item['low'])
-            close = float(item['close'])
-            open = float(item['open'])
-            day = item['day']
-
-            if i == 0:
-                d = {
-                    'volume': volume,
-                    'high': high,
-                    'low': low,
-                    'close': close,
-                    'open': open,
-                    'day': day.split(" ")[0]
-                }
-            else:
-                d['volume'] += volume
-                d['high'] = high if high > d['high'] else d['high']
-                d['low'] = low if low < d['low'] else d['low']
-                d['close'] = close
-                d['open'] = open
-
-            i += 1
-            if i > 3:
-                newData.append(d)
-                d = {}
-                i = 0
-
-        return newData
+        return res_json
 
 class CustomComand(View):
     def get(self, request):
+        SzAllDetail.objects.all().delete()
+        ShAllDetail.objects.all().delete()
         return HttpResponse(json.dumps('success!'), content_type="application/json")
