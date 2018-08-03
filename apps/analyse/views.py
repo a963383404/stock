@@ -10,15 +10,34 @@ from stockList.models import ShAll, SzAll, ShAllDetail, SzAllDetail
 
 class GoldColumnView(View):
     def get(self, request):
-        self.selectSH()
+        # 统计最近六十个交易日的黄金数量
+        # 改为在命令行中运行
+        # self.selectSH()
+        # self.selectSZ()
+
         return HttpResponse(json.dumps('9999'), content_type="application/json")
 
     def selectSH(self):
         a = ShAll.objects.all()
         for s in a:
-            obj = ShAllDetail.objects.filter(stock=s).order_by('day').all()
+            obj = ShAllDetail.objects.filter(stock=s).order_by('-day')[0:60]
+            total = 0
             for o in obj:
-                print o.open
+                if o.color == '#FFD700':
+                    total = total + 1
+            ShAll.objects.filter(id=s.id).update(goldTotal=total)
+            print str(s.code) + " : " + str(total)
+
+    def selectSZ(self):
+        a = SzAll.objects.all()
+        for s in a:
+            obj = SzAllDetail.objects.filter(stock=s).order_by('-day')[0:60]
+            total = 0
+            for o in obj:
+                if o.color == '#FFD700':
+                    total = total + 1
+            SzAll.objects.filter(id=s.id).update(goldTotal=total)
+            print str(s.code) + " : " + str(total)
 
     # 选出含有黄金柱的个股
     @staticmethod

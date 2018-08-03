@@ -7,12 +7,12 @@
 <body>
 <ul>
     {% for i in szData %}
-        <li><a href="/show/szstock/?code={{ i.code }}">{{ i.name }}</a> </li>
+        <li><a href="/show/szstock/?code={{ i.code }}">{{ i.name }}({{ i.code }})</a> </li>
     {% endfor %}
 </ul>
 <ul>
     {% for i in shData %}
-        <li><a href="/show/shstock/?code={{ i.code }}">{{ i.name }}</a> </li>
+        <li><a href="/show/shstock/?code={{ i.code }}">{{ i.name }}({{ i.code }})</a> </li>
     {% endfor %}
 </ul>
 </body>

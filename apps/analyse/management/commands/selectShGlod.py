@@ -66,7 +66,10 @@ class Command(BaseCommand):
         # 条件1，第一天的量柱大于后三天的平均值
         if a1['volume'] < (a2['volume'] + a3['volume'] + a4['volume']) / 3:
             res = False
-        elif a1['close'] > a4['close']:
+        # 条件2，第四天的收盘价比第一天高
+        if a1['close'] > a4['close']:
             res = False
-
+        # 条件3，当天为阳柱
+        if a1['open'] > a1['close']:
+            res = False
         return res
