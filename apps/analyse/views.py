@@ -30,3 +30,9 @@ class GoldColumnView(View):
         :return:
         '''
         pass
+
+class TopGoldView(View):
+    def get(self, request):
+        shData = ShAll.objects.order_by("-goldTotal").all()[0:10]
+        szData = SzAll.objects.order_by("-goldTotal").all()[0:10]
+        return render(request, 'topGold.html', {'shData': shData, 'szData': szData})

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<ul>
+    {% for i in szData %}
+        <li><a href="/show/szstock/?code={{ i.code }}">{{ i.name }}</a> </li>
+    {% endfor %}
+</ul>
+<ul>
+    {% for i in shData %}
+        <li><a href="/show/shstock/?code={{ i.code }}">{{ i.name }}</a> </li>
+    {% endfor %}
+</ul>
+</body>
+</html>
