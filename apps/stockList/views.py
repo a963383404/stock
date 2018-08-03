@@ -81,15 +81,13 @@ class CollectionDetailData(View):
         print request.GET
         # 解决ConnectionError
         try:
-            if market != 'SH':
+            if market == 'SH':
                 # 处理深证数据
-                self.handleSzData(int(id))
+                self.handleShData(int(id))
 
             if market == 'SZ':
-                id = 0
-
-            # 处理上证数据
-            self.handleShData(int(id))
+                # 处理上证数据
+                self.handleSzData(int(id))
         except requests.exceptions.ConnectionError as e:
             self.result['state'] = 'FAIL'
         except Exception as e:

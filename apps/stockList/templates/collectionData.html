@@ -8,7 +8,8 @@
     <script src="{% static 'layer/layer.js' %}"></script>
 </head>
 <body>
-    <button id="collectionDetail">开始收集数据</button>
+    <button id="collectionDetail">开始收集深证数据</button>
+    <button id="collectionDetail2">开始收集上证数据</button>
     <ul id="resultData">
 
     </ul>
@@ -44,6 +45,10 @@ function collectionAjax(market, id){
 
 $("#collectionDetail").click(function () {
     collectionAjax("SZ", 0);
+});
+
+$("#collectionDetail2").click(function () {
+    collectionAjax("SH", 0);
 })
 </script>
 </html>
