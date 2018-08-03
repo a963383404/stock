@@ -60,6 +60,8 @@ class CustomStock(View):
                 color = 'green'
                 if close > open:
                     color = 'red'
+                if o.color:
+                    color = o.color
 
                 data.append({
                     'timeStamp': day,

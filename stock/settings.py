@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'stockList',
     'show',
+    'analyse',
 ]
 
 MIDDLEWARE = [
@@ -85,8 +86,9 @@ DATABASES = {
         'HOST': '192.168.32.44',
         'PORT': '5306',
         'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            # 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'charset': 'utf8mb4',
+            'sql_mode': 'traditional',
         },
     }
 }

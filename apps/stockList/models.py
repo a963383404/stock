@@ -7,6 +7,7 @@ class SzAll(models.Model):
     code = models.CharField(max_length=100, blank=False, null=False, verbose_name='代码')
     name = models.CharField(max_length=100, blank=False, null=False, verbose_name='名称')
     symbol = models.CharField(max_length=100, blank=False, null=False, verbose_name='代码标识')
+    goldTotal = models.IntegerField(default=0, verbose_name='黄金柱个数')
 
     class Meta:
         verbose_name = "深证列表"
@@ -19,6 +20,7 @@ class ShAll(models.Model):
     code = models.CharField(max_length=100, blank=False, null=False, verbose_name='代码')
     name = models.CharField(max_length=100, blank=False, null=False, verbose_name='名称')
     symbol = models.CharField(max_length=100, blank=False, null=False, verbose_name='代码标识')
+    goldTotal = models.IntegerField(default=0, verbose_name='黄金柱个数')
 
     class Meta:
         verbose_name = "上证列表"
@@ -35,6 +37,7 @@ class SzAllDetail(models.Model):
     open = models.FloatField(blank=False, null=False, verbose_name='开盘价')
     day = models.CharField(blank=False, null=False, verbose_name='日期', max_length=100)
     stock = models.ForeignKey(SzAll, verbose_name='代码标识')
+    color = models.CharField(max_length=100, blank=True, null=True, verbose_name='颜色')
 
     class Meta:
         verbose_name = "深证股票数据"
@@ -51,6 +54,7 @@ class ShAllDetail(models.Model):
     open = models.FloatField(blank=False, null=False, verbose_name='开盘价')
     day = models.CharField(blank=False, null=False, verbose_name='日期', max_length=100)
     stock = models.ForeignKey(ShAll, verbose_name='代码标识')
+    color = models.CharField(max_length=100, blank=True, null=True, verbose_name='颜色')
 
     class Meta:
         verbose_name = "上证股票数据"
