@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.core.management.base import BaseCommand, CommandError
 from stockList.models import ShAll, SzAll, ShAllDetail, SzAllDetail
+from analyse.models import ShAnalyseTotal, SzAnalyseTotal
 
 class Command(BaseCommand):
     help = '统计前N个交易日黄金柱总数'
@@ -36,6 +37,8 @@ class Command(BaseCommand):
                 if o.color == '#FFD700':
                     total = total + 1
             ShAll.objects.filter(id=s.id).update(goldTotal=total)
+            # 添加到 ShAnalyseTotal 中
+            self.addShAnalyseTotal(s, total)
             print str(s.code) + " : " + str(total)
 
     def selectSZ(self, arg):
@@ -47,4 +50,20 @@ class Command(BaseCommand):
                 if o.color == '#FFD700':
                     total = total + 1
             SzAll.objects.filter(id=s.id).update(goldTotal=total)
+            # 添加到SzAnalyse
+            self.addSzAnalyseTotal(s, total)
             print str(s.code) + " : " + str(total)
+
+    def addShAnalyseTotal(self, stock, goldTotal):
+        obj = ShAnalyseTotal.objects.filter(stock=stock)
+        if obj:
+            obj.update(goldTotal=goldTotal)
+        else:
+            ShAnalyseTotal.objects.create(goldTotal=goldTotal, stock=stock)
+
+    def addSzAnalyseTotal(self, stock, goldTotal):
+        obj = SzAnalyseTotal.objects.filter(stock=stock)
+        if obj:
+            obj.update(goldTotal=goldTotal)
+        else:
+            SzAnalyseTotal.objects.create(goldTotal=goldTotal, stock=stock)
