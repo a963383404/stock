@@ -1,19 +1,55 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>topGold</title>
+    <script src="https://img.hcharts.cn/jquery/jquery-1.8.3.min.js"></script>
+    <script src="{% static 'layer/layer.js' %}"></script>
+    <style type="text/css">
+        .pointer {
+            cursor: pointer;
+        }
+
+        .pointer:hover {
+            background-color: yellow;
+        }
+    </style>
 </head>
 <body>
 <ul>
     {% for i in szData %}
-        <li><a href="/show/szstock/?code={{ i.code }}">{{ i.name }}({{ i.code }})</a> </li>
+        <li>
+            <a href="/show/szstock/?code={{ i.code }}">{{ i.name }}({{ i.code }})</a>
+            &nbsp;&nbsp;&nbsp;<span class="pointer" onclick="show('sz{{ i.code }}', '{{ i.name }}')">查看k线图</span>
+        </li>
     {% endfor %}
 </ul>
 <ul>
     {% for i in shData %}
-        <li><a href="/show/shstock/?code={{ i.code }}">{{ i.name }}({{ i.code }})</a> </li>
+        <li>
+            <a href="/show/shstock/?code={{ i.code }}">{{ i.name }}({{ i.code }})</a>
+            &nbsp;&nbsp;&nbsp;
+            <span class="pointer" onclick="show('sh{{ i.code }}', '{{ i.name }}')">查看k线图</span>
+        </li>
     {% endfor %}
 </ul>
 </body>
+<script type="text/javascript">
+    var layerIndex;
+
+    function show(code, name) {
+        if (layerIndex) layer.close(layerIndex);
+        var url = 'http://image.sinajs.cn/newchart/daily/n/' + code + '.gif';
+        layerIndex = layer.open({
+            type: 2,
+            title: name,
+            shadeClose: true,
+            shade: false,
+            maxmin: true, //开启最大化最小化按钮
+            area: ['568px', '368px'],
+            content: url
+        });
+    }
+</script>
 </html>
