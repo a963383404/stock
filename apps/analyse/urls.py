@@ -14,9 +14,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
-from .views import GoldColumnView, TopGoldView
+from .views import GoldColumnView, TopGoldView, DoubleScaleView
 
 urlpatterns = [
     url(r'^goldColumn', GoldColumnView.as_view(), name='goldColumn'),
     url(r'^topGold', TopGoldView.as_view(), name='topGoldView'),
+    url(r'^doubleScale', DoubleScaleView.as_view(), name='doubleScaleView'),
 ]

@@ -20,17 +20,17 @@
 <ul>
     {% for i in szData %}
         <li>
-            <a href="/show/szstock/?code={{ i.code }}">{{ i.name }}({{ i.code }})</a>
-            &nbsp;&nbsp;&nbsp;<span class="pointer" onclick="show('sz{{ i.code }}', '{{ i.name }}')">查看k线图</span>
+            <a href="/show/szstock/?code={{ i.stock.code }}">{{ i.stock.name }}({{ i.stock.code }})</a>
+            &nbsp;&nbsp;&nbsp;<span class="pointer" onclick="show('sz{{ i.stock.code }}', '{{ i.stock.name }}')">查看k线图</span>
         </li>
     {% endfor %}
 </ul>
 <ul>
     {% for i in shData %}
         <li>
-            <a href="/show/shstock/?code={{ i.code }}">{{ i.name }}({{ i.code }})</a>
+            <a href="/show/shstock/?code={{ i.stock.code }}">{{ i.stock.name }}({{ i.stock.code }})</a>
             &nbsp;&nbsp;&nbsp;
-            <span class="pointer" onclick="show('sh{{ i.code }}', '{{ i.name }}')">查看k线图</span>
+            <span class="pointer" onclick="show('sh{{ i.stock.code }}', '{{ i.stock.name }}')">查看k线图</span>
         </li>
     {% endfor %}
 </ul>
@@ -41,13 +41,14 @@
     function show(code, name) {
         if (layerIndex) layer.close(layerIndex);
         var url = 'http://finance.sina.com.cn/realstock/company/' + code + '/nc.shtml';
+        console.log(url);
         layerIndex = layer.open({
             type: 2,
             title: name,
             shadeClose: true,
             shade: false,
             maxmin: true, //开启最大化最小化按钮
-            area: ['568px', '368px'],
+            area: ['668px', '468px'],
             content: url
         });
         layer.full(layerIndex);

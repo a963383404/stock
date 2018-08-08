@@ -73,6 +73,7 @@ class CollectionShList(View):
 class CollectionDetailData(View):
     URL = "http://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=%s&scale=240&ma=no&datalen=1023"
     result = {'market': None,  'state': 'SUCCESS', 'id': None}
+    obj_id = 0
 
     def get(self, request):
         market = request.GET.get("market", None)
@@ -88,12 +89,20 @@ class CollectionDetailData(View):
             if market == 'SZ':
                 # 处理上证数据
                 self.handleSzData(int(id))
+
+            self.result['id'] = self.getId()
         except requests.exceptions.ConnectionError as e:
-            self.result['state'] = 'FAIL'
+            self.result = {'market': market, 'state': 'FAIL', 'id': self.getId()}
         except Exception as e:
-            self.result = {'market': market, 'state': 'FAIL', 'id': id}
+            self.result = {'market': market, 'state': 'FAIL', 'id': self.getId()}
 
         return HttpResponse(json.dumps(self.result), content_type="application/json")
+
+    def getId(self):
+        id = 0
+        if self.obj_id > 0:
+            id = self.obj_id - 1
+        return id
 
     # 处理深证数据
     def handleSzData(self, id):
@@ -101,6 +110,7 @@ class CollectionDetailData(View):
 
         for szObj in allObj:
             data = self.changeDate(szObj.symbol)
+            self.obj_id = szObj.id
             for data_item in data:
                 res = self.saveSzData(data_item, szObj)
                 if not res:
@@ -132,6 +142,7 @@ class CollectionDetailData(View):
 
         for shObj in allObj:
             data = self.changeDate(shObj.symbol)
+            self.obj_id = shObj.id
             for data_item in data:
                 res = self.saveShData(data_item, shObj)
                 if not res:

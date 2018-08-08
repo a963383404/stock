@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.views.generic.base import View
 
 from stockList.models import ShAll, SzAll, ShAllDetail, SzAllDetail
+from analyse.models import SzAnalyseTotal, ShAnalyseTotal
 
 class GoldColumnView(View):
     def get(self, request):
@@ -54,4 +55,19 @@ class TopGoldView(View):
     def get(self, request):
         shData = ShAll.objects.order_by("-goldTotal").all()[0:10]
         szData = SzAll.objects.order_by("-goldTotal").all()[0:10]
-        return render(request, 'topGold.html', {'shData': shData, 'szData': szData})
+        return render(request, 'topGold.html', {
+            'shData': shData,
+            'szData': szData,
+            'title': 'TopGold'
+        })
+
+
+class DoubleScaleView(View):
+    def get(self, request):
+        shData = ShAnalyseTotal.objects.filter(doubleScaleExpansionTotal__gt=0).all()
+        szData = SzAnalyseTotal.objects.filter(doubleScaleExpansionTotal__gt=0).all()
+        return render(request, 'doubleScale.html', {
+            'shData': shData,
+            'szData': szData,
+            'title': "DoubleScale"
+        })

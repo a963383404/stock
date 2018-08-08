@@ -13,8 +13,8 @@ class Command(BaseCommand):
         try:
             for n in options['num']:
                 arg.append(int(n))
-            if len(arg) != 2:
-                raise CommandError('two argments must!')
+            if len(arg) != 3:
+                raise CommandError('three argments must!')
             # 遍历深证个股
             self.selectSZ(arg)
         except Exception as e:
@@ -28,6 +28,12 @@ class Command(BaseCommand):
         a = SzAll.objects.filter(id__lt=arg[1], id__gt=arg[0]).all()
         for s in a:
             d = SzAllDetail.objects.filter(stock=s).order_by('day').all()
+            d_l = len(d)
+            d_s = d_l - arg[2]
+            if d_s < 0:
+                d_s = 0
+            d = d[d_s:d_l]
+
             total = 0
             item = []
             for o in d:

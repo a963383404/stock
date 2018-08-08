@@ -31,11 +31,11 @@ class Command(BaseCommand):
 
     def doubleScaleExpansionTotal(self, arg):
         # 统计前将所有记录初始化为0
-        SzAnalyseTotal.objects.update(doubleScaleExpansionTotal=0)
+        ShAnalyseTotal.objects.update(doubleScaleExpansionTotal=0)
 
-        a = SzAll.objects.filter(id__lt=arg[1], id__gt=arg[0]).all()
+        a = ShAll.objects.filter(id__lt=arg[1], id__gt=arg[0]).all()
         for s in a:
-            d = SzAllDetail.objects.filter(stock=s).order_by('-day').all()[0: arg[2]]
+            d = ShAllDetail.objects.filter(stock=s).order_by('-day').all()[0: arg[2]]
 
             # 分析是否倍量伸缩
             total = self.isDoubleScaleExpansion(d)
@@ -70,8 +70,8 @@ class Command(BaseCommand):
         return total
 
     def add(self, obj, total):
-        o = SzAnalyseTotal.objects.filter(stock=obj)
+        o = ShAnalyseTotal.objects.filter(stock=obj)
         if o:
             o.update(doubleScaleExpansionTotal=total)
         else:
-            SzAnalyseTotal.objects.create(doubleScaleExpansionTotal=total, stock=obj)
+            ShAnalyseTotal.objects.create(doubleScaleExpansionTotal=total, stock=obj)
