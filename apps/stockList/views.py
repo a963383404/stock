@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import requests, json, time
+import requests, json, time, os
 from django.views.generic.base import View
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -78,23 +78,30 @@ class CollectionDetailData(View):
     def get(self, request):
         market = request.GET.get("market", None)
         id = request.GET.get("id", 0)
+        startId = request.GET.get("startId", 0)
+        endId = request.GET.get("endId", 0)
 
         print request.GET
         # 解决ConnectionError
         try:
+            startId = int(startId)
+            endId = int(endId)
+            request.session[endId] = startId
             if market == 'SH':
                 # 处理深证数据
-                self.handleShData(int(id))
+                self.handleShData(startId, endId, request)
 
             if market == 'SZ':
                 # 处理上证数据
-                self.handleSzData(int(id))
+                self.handleSzData(startId, endId, request)
 
             self.result['id'] = self.getId()
         except requests.exceptions.ConnectionError as e:
-            self.result = {'market': market, 'state': 'FAIL', 'id': self.getId()}
+            print e
+            self.result = {'market': market, 'state': 'FAIL', 'id': request.session.get(endId, 0)}
         except Exception as e:
-            self.result = {'market': market, 'state': 'FAIL', 'id': self.getId()}
+            print e
+            self.result = {'market': market, 'state': 'FAIL', 'id': request.session.get(endId, 0)}
 
         return HttpResponse(json.dumps(self.result), content_type="application/json")
 
@@ -105,12 +112,13 @@ class CollectionDetailData(View):
         return id
 
     # 处理深证数据
-    def handleSzData(self, id):
-        allObj = SzAll.objects.filter(id__gt=id).all()
+    def handleSzData(self,  startId, endId, request):
+        allObj = SzAll.objects.filter(id__gte=startId, id__lte=endId).all()
 
         for szObj in allObj:
             data = self.changeDate(szObj.symbol)
             self.obj_id = szObj.id
+            request.session[endId] = szObj.id
             for data_item in data:
                 res = self.saveSzData(data_item, szObj)
                 if not res:
@@ -137,12 +145,13 @@ class CollectionDetailData(View):
             return True
 
     # 处理上证数据
-    def handleShData(self, id):
-        allObj = ShAll.objects.filter(id__gt=id).all()
+    def handleShData(self, startId, endId, request):
+        allObj = ShAll.objects.filter(id__gte=startId, id__lte=endId).all()
 
         for shObj in allObj:
             data = self.changeDate(shObj.symbol)
             self.obj_id = shObj.id
+            request.session[endId] = shObj.id
             for data_item in data:
                 res = self.saveShData(data_item, shObj)
                 if not res:
@@ -183,8 +192,36 @@ class CollectionDetailData(View):
 
         return res_json
 
+def execCommand(dic):
+    startId = dic['startId']
+    endId = dic['endId']
+    len = dic['len']
+    c1 = './manage.py selectShGlod %s %s %s' % (startId, endId, len)
+    c2 = './manage.py selectSzGlod %s %s %s' % (startId, endId, len)
+    os.system(c1)
+    os.system(c2)
+
 class CustomComand(View):
     def get(self, request):
-        SzAllDetail.objects.all().delete()
-        ShAllDetail.objects.all().delete()
+        from multiprocessing import Pool
+        import time
+        pool = Pool()
+
+        startTime = time.time()
+
+        arr = []
+        len = 200
+        i = 1
+        while i < 25:
+            startId = (i -1) * 100
+            endId = i * 100
+            dic = {"startId": startId, 'endId': endId, 'len': len}
+            arr.append(dic)
+            i = i + 1
+        pool.map(execCommand, arr)
+        pool.close()
+        pool.join()
+
+        endTime = time.time()
+        print endTime - startTime
         return HttpResponse(json.dumps('success!'), content_type="application/json")

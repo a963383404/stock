@@ -15,11 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
+from home.views import HomeView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^stockList/', include('stockList.urls', namespace='stockList')),
     url(r'^show/', include('show.urls', namespace='show')),
     url(r'^analyse/', include('analyse.urls', namespace='analyse')),
+    url(r'^$', HomeView.as_view(), name='home')
 
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

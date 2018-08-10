@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'stockList',
     'show',
     'analyse',
+    'home',
+    'package',
 ]
 
 MIDDLEWARE = [
@@ -134,3 +136,4 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+STATIC_ROOT = "/var/www/stock/static/"

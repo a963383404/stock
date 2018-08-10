@@ -25,7 +25,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Success.'))
 
     def selectSZ(self, arg):
-        a = SzAll.objects.filter(id__lt=arg[1], id__gt=arg[0]).all()
+        a = SzAll.objects.filter(id__lte=arg[1], id__gte=arg[0]).all()
         for s in a:
             d = SzAllDetail.objects.filter(stock=s).order_by('day').all()
             d_l = len(d)

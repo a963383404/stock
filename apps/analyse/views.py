@@ -64,8 +64,13 @@ class TopGoldView(View):
 
 class DoubleScaleView(View):
     def get(self, request):
-        shData = ShAnalyseTotal.objects.filter(doubleScaleExpansionTotal__gt=0).all()
-        szData = SzAnalyseTotal.objects.filter(doubleScaleExpansionTotal__gt=0).all()
+        value = request.GET.get("value", 0)
+        try:
+            value = int(value)
+        except Exception as e:
+            value = 0
+        shData = ShAnalyseTotal.objects.filter(doubleScaleExpansionTotal__gt=value).all()
+        szData = SzAnalyseTotal.objects.filter(doubleScaleExpansionTotal__gt=value).all()
         return render(request, 'doubleScale.html', {
             'shData': shData,
             'szData': szData,

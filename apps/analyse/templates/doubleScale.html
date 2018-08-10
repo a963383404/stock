@@ -1,22 +1,17 @@
+{% extends "home.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ title }}</title>
-    <script src="https://img.hcharts.cn/jquery/jquery-1.8.3.min.js"></script>
-    <script src="{% static 'layer/layer.js' %}"></script>
-    <style type="text/css">
-        .pointer {
-            cursor: pointer;
-        }
 
-        .pointer:hover {
-            background-color: yellow;
-        }
-    </style>
-</head>
-<body>
+{% block sidebar %}{% endblock %}
+
+{% block breadcrumb %}
+    <li>
+        <i class="ace-icon fa fa-home home-icon"></i>
+        <a href="#">分析</a>
+    </li>
+    <li class="active">倍量收缩</li>
+{% endblock %}
+
+{% block pageContent %}
 <ul>
     {% for i in szData %}
         <li>
@@ -34,7 +29,15 @@
         </li>
     {% endfor %}
 </ul>
-</body>
+{% endblock %}
+
+{% block pluginScripts %}
+<!-- page specific plugin scripts -->
+<script src="{% static 'layer/layer.js' %}"></script>
+{% endblock %}
+
+{% block inlineScripts %}
+<!-- inline scripts related to this page -->
 <script type="text/javascript">
     var layerIndex;
 
@@ -53,5 +56,6 @@
         });
         layer.full(layerIndex);
     }
+
 </script>
-</html>
+{% endblock %}

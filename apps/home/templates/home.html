@@ -1,0 +1,127 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta charset="utf-8"/>
+    <title>{{ title }}</title>
+
+    <meta name="description" content="overview &amp; stats"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+
+    <!-- bootstrap & fontawesome -->
+    <link rel="stylesheet" href="{% static "ace/css/bootstrap.min.css" %}"/>
+    <link rel="stylesheet" href="{% static "ace/font-awesome/4.5.0/css/font-awesome.min.css" %}"/>
+
+    <!-- page specific plugin styles -->
+
+    <!-- text fonts -->
+    <link rel="stylesheet" href="{% static "ace/css/fonts.googleapis.com.css" %}"/>
+
+    <!-- ace styles -->
+    <link rel="stylesheet" href="{% static "ace/css/ace.min.css" %}" class="ace-main-stylesheet" id="main-ace-style"/>
+
+    <!--[if lte IE 9]>
+			<link rel="stylesheet" href="{% static "ace/css/ace-part2.min.css" %}" class="ace-main-stylesheet" />
+		<![endif]-->
+    <link rel="stylesheet" href="{% static "ace/css/ace-skins.min.css" %}"/>
+    <link rel="stylesheet" href="{% static "ace/css/ace-rtl.min.css" %}"/>
+
+    <!--[if lte IE 9]>
+		  <link rel="stylesheet" href="{% static "ace/css/ace-ie.min.css" %}" />
+		<![endif]-->
+
+    <!-- inline styles related to this page -->
+
+    <!-- ace settings handler -->
+    <script src="{% static "ace/js/ace-extra.min.js" %} "></script>
+
+    <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
+
+    <!--[if lte IE 8]>
+		<script src="{% static "ace/js/html5shiv.min.js" %} "></script>
+		<script src="{% static "ace/js/respond.min.js" %} "></script>
+		<![endif]-->
+    {% block pluginCSS %}
+    {% endblock %}
+    {% block inlineCSS %}
+    {% endblock %}
+</head>
+
+<body class="no-skin">
+{% include 'navbar.html' %}
+
+<div class="main-container ace-save-state" id="main-container">
+    <script type="text/javascript">
+        try {
+            ace.settings.loadState('main-container')
+        } catch (e) {
+        }
+    </script>
+    {% block sidebar %}
+    {% include "sidebar.html" %}
+    {% endblock %}
+
+    <div class="main-content">
+        <div class="main-content-inner">
+            <div class="breadcrumbs ace-save-state" id="breadcrumbs">
+                <ul class="breadcrumb">
+                    {% block breadcrumb %}
+                    {% endblock %}
+                </ul><!-- /.breadcrumb -->
+
+            {% block nav-search %}
+                <div class="nav-search" id="nav-search">
+                    <form class="form-search">
+                        <span class="input-icon">
+                            <input type="text" placeholder="Search ..." class="nav-search-input"
+                                   id="nav-search-input" autocomplete="off" value="{{ search_value }}"/>
+                            <i class="ace-icon fa fa-search nav-search-icon"></i>
+                        </span>
+                    </form>
+                </div><!-- /.nav-search -->
+            {% endblock %}
+            </div>
+
+            <div class="page-content">
+                {% block pageContent %}
+                {% endblock %}
+            </div><!-- /.page-content -->
+        </div>
+    </div><!-- /.main-content -->
+
+    {% include "footer.html" %}
+
+    <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+        <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+    </a>
+</div><!-- /.main-container -->
+
+<!-- basic scripts -->
+
+<!--[if !IE]> -->
+<script src="{% static "ace/js/jquery-2.1.4.min.js" %} "></script>
+
+<!-- <![endif]-->
+
+<!--[if IE]>
+<script src="{% static "ace/js/jquery-1.11.3.min.js" %} "></script>
+<![endif]-->
+<script type="text/javascript">
+    if ('ontouchstart' in document.documentElement) document.write("<script src='{% static "ace/js/jquery.mobile.custom.min.js" %}'>" + "<" + "/script>");
+</script>
+<script src="{% static "ace/js/bootstrap.min.js" %} "></script>
+
+{% block pluginScripts %}
+<!-- page specific plugin scripts -->
+{% endblock %}
+
+<!-- ace scripts -->
+<script src="{% static "ace/js/ace-elements.min.js" %} "></script>
+<script src="{% static "ace/js/ace.min.js" %} "></script>
+
+{% block inlineScripts %}
+<!-- inline scripts related to this page -->
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,213 @@
+{% extends 'home.html' %}
+{% load staticfiles %}
+
+{% block breadcrumb %}
+    <li>
+        <i class="ace-icon fa fa-home home-icon"></i>
+        <a href="/">首页</a>
+    </li>
+    <li class="active">概况</li>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}
+
+{% block pageContent %}
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="widget-box widget-color-blue2">
+                <div class="widget-header">
+                    <h4 class="widget-title lighter smaller">collection sh</h4>
+                    <div class="widget-toolbar no-border">
+                    </div>
+                </div>
+                <div class="widget-body" style="max-height: 200px;">
+                    <div class="widget-main padding-8" id="collectionShWin">
+                        <button class="btn btn-primary btn-xs" id="collectionSh">收集上证数据</button>
+                        <button class="btn btn-primary btn-xs" id="collectionSz">收集证证数据</button>
+                        <div class="space-6"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="widget-box widget-color-blue2">
+                <div class="widget-header">
+                    <h4 class="widget-title lighter smaller">collection doubleScale</h4>
+                    <div class="widget-toolbar no-border">
+                    </div>
+                </div>
+                <div class="widget-body" style="max-height: 200px;">
+                    <div class="widget-main padding-8" id="collectionDSWin">
+                        统计前N天: <input type="text" id="spinner1" class="spinner"/>
+                        <div class="space-6"></div>
+                        <button class="btn btn-primary btn-xs" id="collectionDoubleScale">收集倍量伸缩数据</button>
+                        <div class="space-6"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="widget-box widget-color-blue2">
+                <div class="widget-header">
+                    <h4 class="widget-title lighter smaller">collection gold</h4>
+                    <div class="widget-toolbar no-border">
+                    </div>
+                </div>
+                <div class="widget-body" style="max-height: 200px;">
+                    <div class="widget-main padding-8"  id="collectionGoldWin">
+                        <button class="btn btn-primary btn-xs" id="collectionGold">收集黄金柱数据</button>
+                        <div class="space-6"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="widget-box widget-color-blue2">
+                <div class="widget-header">
+                    <h4 class="widget-title lighter smaller">导航栏</h4>
+                    <div class="widget-toolbar no-border">
+                    </div>
+                </div>
+                <div class="widget-body" style="max-height: 200px;">
+                    <div class="widget-main padding-8">
+                        <ul>
+			                <li><a href="{% url 'analyse:topGoldView' %}">topGold</a></li>
+                            <li><a href="{% url 'analyse:doubleScaleView' %}">倍量伸缩</a></li>
+                            <li><a href="{% url 'stockList:customComand' %}">comonComand</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block pluginScripts %}
+    <script src="{% static "ace/js/spinbox.min.js" %}"></script>
+    <script src="{% static 'layer/layer.js' %}"></script>
+{% endblock %}
+{% block inlineScripts %}
+    <!-- inline scripts related to this page -->
+    <script type="text/javascript">
+        jQuery(function ($) {
+            $('#spinner1').ace_spinner({
+                value: 0,
+                min: 3,
+                max: 100,
+                step: 1,
+                btn_up_class: 'btn-info',
+                btn_down_class: 'btn-info'
+            })
+                .closest('.ace-spinner')
+                .on('changed.fu.spinbox', function () {
+                    //console.log($('#spinner1').val())
+                });
+            $("#collectionSh, #collectionSz").click(function () {
+                var id = $(this).attr("id");
+
+                if (id == 'collectionSh'){
+                    if (!$("#collectionSh").hasClass('disabled')) {
+                        $(".alert-collection-sh").remove();
+                        $("#collectionSh").addClass('disabled');
+
+                        collectionAjax("SH", 0, 3000)
+                    }
+                }else{
+                    if (!$("#collectionSz").hasClass('disabled')) {
+                        $(".alert-collection-sh").remove();
+                        $("#collectionSz").addClass('disabled');
+
+                        collectionAjax("SZ", 0, 3000)
+                    }
+                }
+
+            });
+
+            function collectionAjax(market, startId, endId) {
+                $.ajax({
+                    type: 'GET',
+                    data: {'market': market, 'startId': startId, 'endId': endId},
+                    url: '{% url 'stockList:collectionDetailData' %}',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                        layIndex = layer.msg('正在收集数据，请稍等！', {icon: 16, time: -1});
+                    },
+                    error: function () {//请求失败处理函数
+                        layer.alert("发生未知错误，请联系管理员！");
+                    },
+
+                    success: function (result) { //请求成功后处理函数。
+                        console.log(result);
+                        layer.close(layIndex);
+                        var res = result;
+                        var html = "";
+                        $("#resultData").append(html);
+                        if (res['state'] == 'SUCCESS') {
+                            html = '<div class="alert alert-success alert-collection-sh">\n' +
+                                '      状态："' + res['state'] + '"；市场："' + res['market'] + '"；结束代码："' + res['id'] + '"。\n' +
+                                '  </div>';
+                            $("#collectionShWin").append(html);
+                        } else {
+                            html = '<div class="alert alert-danger alert-collection-sh">\n' +
+                                '      状态："' + res['state'] + '"；市场："' + res['market'] + '"；结束代码："' + res['id'] + '"。\n' +
+                                '  </div>';
+                            $("#collectionShWin").append(html);
+                            collectionAjax(res['market'], res['id'], endId);
+                        }
+                    }
+                });
+            }
+
+            $("#collectionDoubleScale").click(function () {
+                var v = $("#spinner1").val();
+                var dic = {"oper": 'collectionDoubleScale', "value": v};
+
+                var obj = $("#collectionDSWin");
+                homePostAjax(dic, obj);
+
+            });
+
+            $("#collectionGold").click(function () {
+                for (var i = 1; i < 14; i++){
+                    var startId = (i - 1) * 200,
+                        endId = i * 200,
+                        len = 100;
+                    var dic = {"oper": 'collectionGold', "startId": startId, "endId": endId, 'len': len};
+                    var obj = $("#collectionGoldWin");
+                    homePostAjax(dic, obj);
+                }
+            });
+            function homePostAjax(dic, obj) {
+                $.ajax({
+                    type: 'POST',
+                    data: dic,
+                    url: '{% url 'home' %}',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                        layIndex = layer.msg('正在收集数据，请稍等！', {icon: 16, time: -1});
+                    },
+                    error: function () {//请求失败处理函数
+                        layer.alert("发生未知错误，请联系管理员！");
+                    },
+
+                    success: function (result) { //请求成功后处理函数。
+                        console.log(result);
+                        layer.close(layIndex);
+                        var res = JSON.parse(result);
+                        var html = "";
+                        if (res['state'] == 'SUCCESS') {
+                            html = '<div class="alert alert-success alert-collection-sh">\n' +
+                                res['msg'] +
+                                '  </div>';
+                        } else {
+                            html = '<div class="alert alert-danger alert-collection-sh">\n' +
+                                    res['msg'] +
+                                '  </div>';
+                        };
+                         obj.append(html);
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}
